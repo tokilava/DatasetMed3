@@ -1,18 +1,54 @@
 # Data Analysis
+
+
+# Here is a link to a lot of different statistical analyses you can do in R. Start by looking at the BCI papers what type of test do they use? It would make sense to use the same type as them. https://stats.idre.ucla.edu/r/whatstat/what-statistical-analysis-should-i-usestatistical-analyses-using-r/
+
+
 #------- libraries ------------
 library(tidyverse)
 library(magrittr)
 
 #------- Load Data ------------
-load("logged_data_Clean.rda")
-load("questionnaire_data_Clean.rda")
-load("ranked_data_Clean.rda")
+load("simple_data_Clean.rda")
 load("merged_data_Clean.rda")
 
-# Data Overview
+#------- Order of PAMs --------
+
+# Does the test order of the PAM influence the fustration?
+TestIDandFrustration <- dfStat %>%
+  group_by(TestID) %>%
+  summarise(meanFrustration = mean(Frustration),
+            medianFrustration = median(Frustration),
+            sdFrustration = sd(Frustration))
+
+TestIDandFrustration
+
+summary(lm(Frustration ~ TestID, data = dfStat))
+
+# Does the test order of the PAM influence the Control?
+TestIDandControl <- dfStat %>%
+  group_by(TestID) %>%
+  summarise(meanControl = mean(Control),
+            medianControl = median(Control),
+            sdControl = sd(Control))
+
+TestIDandControl
+
+summary(lm(Control ~ TestID, data = dfStat))
+
+# Does the test order of the PAM influence the Control
+TestIDandRank <- dfStat %>%
+  dplyr::group_by(TestID) %>%
+  summarise(meanRank = mean(Rank),
+            medianRank = median(Rank),
+            sdRank = sd(Rank))
+
+TestIDandRank
+
+summary(lm(Rank ~ TestID, data = dfStat))
 
 #------- Frustration --------
-FrustrationOverview <- dfT %>%
+FrustrationOverview <- dfStat %>%
   group_by(PAM) %>%
   summarise(meanFrustration = mean(Frustration),
             medianFrustration = median(Frustration),
@@ -20,16 +56,18 @@ FrustrationOverview <- dfT %>%
 
 FrustrationOverview
 
-dfT %>% 
+dfStat %>% 
   ggplot(aes(x = PAM, y = Frustration, color = PAM)) +
   geom_violin() + 
   geom_jitter(shape=16, position=position_jitter(0.2)) +
-  geom_errorbar(aes(ymin = Frustration - sd, ymax = Frustration + sd)) +
   theme_classic()
+
+# PAMs Influence on Fustration
+summary(lm(Frustration ~ PAM, data = dfStat))
 
 #------- Control --------
 
-ControlOverview <- dfT %>%
+ControlOverview <- dfStat %>%
   group_by(PAM) %>%
   summarise(meanControl = mean(Control),
             medianControl = median(Control),
@@ -37,18 +75,20 @@ ControlOverview <- dfT %>%
 
 ControlOverview
 
+# PAMs Influence on Control
+summary(lm(Control ~ PAM, data = dfStat))
+
 #------- Rank --------
 
-RankOverview <- dfT %>%
+RankOverview <- dfStat %>%
   dplyr::group_by(PAM) %>%
-  dplyr::filter(PAM != "Training") %>%
   summarise(meanRank = mean(Rank),
             medianRank = median(Rank),
             sdRank = sd(Rank))
 
 RankOverview
 
-dfT %>% 
+dfStat %>% 
   filter(PAM != "Training") %>%
   ggplot(aes(x = PAM, y = Rank, color = PAM)) +
   geom_violin() +
@@ -56,22 +96,21 @@ dfT %>%
 
 #------- Frustration vs Control --------
 
-dfT %>% 
+dfStat %>% 
   ggplot(aes(x = Control, y = Frustration, color = PAM)) +
   geom_jitter() +
   geom_smooth(method = lm, se=F) +
   theme_classic()
 
 # if we look at all the data
-summary(lm(Frustration ~ Control, data = dfT))
+summary(lm(Frustration ~ Control, data = dfStat))
 
 # If we split them up 
-summary(lm(Frustration ~ Control * PAM, data = dfT))
+summary(lm(Frustration ~ Control * PAM, data = dfStat))
 
 #------- Frustration vs Rank --------
 
-dfT %>% 
-  #filter(Rank = NA) %>%
+dfStat %>% 
   ggplot(aes(x = Rank, y = Frustration, #color = PAM
              )) +
   geom_jitter() +
@@ -79,17 +118,17 @@ dfT %>%
   theme_classic()
 
 # if we look at all the data
-summary(lm(Frustration ~ Rank, data = dfT))
+summary(lm(Frustration ~ Rank, data = dfStat))
 
 # If we split them up 
-summary(lm(Frustration ~ PAM, data = dfT))
+summary(lm(Frustration ~ PAM, data = dfStat))
 
 # If we split them up 
-summary(lm(Frustration ~ Rank * PAM, data = dfT))
+summary(lm(Frustration ~ Rank * PAM, data = dfStat))
 
 #------- Frustration vs Gender --------
 
-GenderFrustrationOverview <- dfT %>%
+GenderFrustrationOverview <- dfStat %>%
   group_by(Gender) %>%
   summarise(meanFrustration = mean(Frustration, na.rm = TRUE),
             medianFrustration = median(Frustration, na.rm = TRUE),
@@ -98,11 +137,11 @@ GenderFrustrationOverview <- dfT %>%
 GenderFrustrationOverview
 
 # Are males and females equal?
-summary(lm(Frustration ~ Gender, data = dfT))
+summary(lm(Frustration ~ Gender, data = dfStat))
 
 #------- Frustration vs Age  --------
 
-dfT %>% 
+dfStat %>% 
   ggplot(aes(x = Age, y = Frustration)) +
   geom_jitter() +
   geom_smooth(aes(color = Gender), method = lm, se=F) +
@@ -110,11 +149,11 @@ dfT %>%
   theme_classic()
 
 # Are males and females equal?
-summary(lm(Frustration ~ Age, data = dfT))
+summary(lm(Frustration ~ Age, data = dfStat))
 
 #------- Control vs Rank --------
 
-dfT %>% 
+dfStat %>% 
   ggplot(aes(x = Rank, y = Control)) +
   #geom_violin(shape=16, position=position_jitter(0.1)) +
   geom_smooth(color = "Black", method = lm, se=F) +
@@ -122,29 +161,25 @@ dfT %>%
   theme_classic()
 
 # if we look at all the data
-summary(lm(Control ~ Rank, data = dfT))
+summary(lm(Control ~ Rank, data = dfStat))
 
 # If we split them up 
-summary(lm(Control ~ PAM, data = dfT))
-
-# If we split them up 
-summary(lm(Control ~ Rank * PAM, data = dfT))
+summary(lm(Control ~ Rank * PAM, data = dfStat))
 
 #------- Control vs Gender --------
 
-GenderControlOverview <- dfT %>%
+GenderControlOverview <- dfStat %>%
   group_by(Gender) %>%
   summarise(meanControl = mean(Control, na.rm = TRUE),
             medianControl = median(Control, na.rm = TRUE),
             sdControl = sd(Control, na.rm = TRUE))
 
-#interstring men feel more in crontrol than women, but women are more frustrated then men
 GenderControlOverview
 
-dfT %>% 
+dfStat %>% 
   ggplot(aes(x = Gender, y = Control)) +
   geom_violin(shape=16, position=position_jitter(0.1)) +
   theme_classic()
 
 # Are men and women equal?
-summary(lm(Control ~ Gender, data = dfT))
+summary(lm(Control ~ Gender, data = dfStat))

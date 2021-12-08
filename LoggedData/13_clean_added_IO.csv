@@ -67,7 +67,7 @@ Age,Gender,Participant ID,Test ID,PAM,# Box,State,Within Range?,Box Collision?,T
 23,Female,13,3,2,13,1,Yes,No,54.597,n/a
 23,Female,13,3,2,14,3,n/a,Yes,59.206,n/a
 23,Female,13,3,2,15,3,n/a,Yes,63.419,n/a
-23,Female,13,2,2,16,2,No,No,67,n/a
+23,Female,13,3,2,16,2,No,No,67,n/a
 23,Female,13,3,2,17,1,Yes,No,71.425,n/a
 23,Female,13,3,2,18,3,n/a,Yes,76.037,n/a
 23,Female,13,3,2,19,1,Yes,No,80.073,n/a

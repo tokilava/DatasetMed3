@@ -195,3 +195,17 @@ remove(col_order)
 
 #Save the imported files
 save(dfT, file='merged_data_Clean.rda', compress=TRUE)
+
+
+# Here I make a Data frame that is a bit easier to work with when we are looking at simple graphs and statistic
+dfStat <- dfT %>%
+  group_by(ParticipantID, TestID, PAM, Gender) %>%
+  filter(Control != "NA") %>%
+  summarise(Age = mean(Age),
+            Control = mean(Control),
+            Frustration = mean(Frustration),
+            Rank = mean(Rank)) %>%
+  ungroup()
+
+#Save the imported files
+save(dfStat, file='simple_data_Clean.rda', compress=TRUE)
