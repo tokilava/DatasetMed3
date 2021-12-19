@@ -183,3 +183,4 @@ dfStat %>%
 
 # Are men and women equal?
 summary(lm(Control ~ Gender, data = dfStat))
+#Prøver at pushe noget
