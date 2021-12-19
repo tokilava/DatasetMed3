@@ -78,7 +78,7 @@ ControlOverview
 # PAMs Influence on Control
 summary(lm(Control ~ PAM, data = dfStat))
 
-#------- Rank --------
+#------- Rank ----------
 
 RankOverview <- dfStat %>%
   dplyr::group_by(PAM) %>%
@@ -96,11 +96,26 @@ dfStat %>%
 
 #------- Frustration vs Control --------
 
+
+#REMOVING PARTICIPANT 6 (OUTLIAR)
+
+dfStat_remove <- dfStat %>% 
+  filter(ParticipantID != 6)
+
+library(ggrepel)
+
 dfStat %>% 
   ggplot(aes(x = Control, y = Frustration, color = PAM)) +
   geom_jitter() +
   geom_smooth(method = lm, se=F) +
-  theme_classic()
+  theme_classic() 
+
+
+cor(dfStat$Frustration, dfStat$Rank)
+plot(dfStat$Frustration, dfStat$Rank)
+
+
+
 
 # if we look at all the data
 summary(lm(Frustration ~ Control, data = dfStat))
@@ -112,7 +127,7 @@ summary(lm(Frustration ~ Control * PAM, data = dfStat))
 
 dfStat %>% 
   ggplot(aes(x = Rank, y = Frustration, #color = PAM
-             )) +
+  )) +
   geom_jitter() +
   geom_smooth(method = lm, se=F) +
   theme_classic()
@@ -154,9 +169,10 @@ summary(lm(Frustration ~ Age, data = dfStat))
 #------- Control vs Rank --------
 
 dfStat %>% 
-  ggplot(aes(x = Rank, y = Control)) +
+  ggplot(aes(x = Rank, y = Control, color = PAM)) +
   #geom_violin(shape=16, position=position_jitter(0.1)) +
-  geom_smooth(color = "Black", method = lm, se=F) +
+  #geom_smooth(color = "Black", method = lm, se=F) +
+  geom_jitter()+
   geom_smooth(aes(color = PAM), method = lm, se=F) +
   theme_classic()
 
@@ -166,6 +182,21 @@ summary(lm(Control ~ Rank, data = dfStat))
 # If we split them up 
 summary(lm(Control ~ Rank * PAM, data = dfStat))
 
+
+#------- Frustration vs Rank ------
+dfStat %>% 
+  ggplot(aes(x = Rank, y = Frustration, color = PAM)) +
+  #geom_violin(shape=16, position=position_jitter(0.1)) +
+  #geom_smooth(color = "Black", method = lm, se=F) +
+  #geom_jitter()
+  geom_smooth(aes(color = PAM), method = lm, se=F) +
+  theme_classic()
+
+# if we look at all the data
+summary(lm(Frustration ~ Rank, data = dfStat))
+
+# If we split them up 
+summary(lm(Frustration ~ Rank * PAM, data = dfStat))
 #------- Control vs Gender --------
 
 GenderControlOverview <- dfStat %>%
@@ -183,4 +214,4 @@ dfStat %>%
 
 # Are men and women equal?
 summary(lm(Control ~ Gender, data = dfStat))
-#Prøver at pushe noget
+
